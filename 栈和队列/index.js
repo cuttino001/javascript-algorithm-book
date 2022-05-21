@@ -4,14 +4,14 @@
 const leftToRight = {
   "(": ")",
   "[": "]",
-  "{": "}"
+  "{": "}",
 };
 
 /**
  * @param {string} s
  * @return {boolean}
  */
-const isValid = function(s) {
+const isValid = function (s) {
   // 结合题意，空字符串无条件判断为 true
   if (!s) {
     return true;
@@ -42,26 +42,26 @@ const isValid = function(s) {
 /**
  * 初始化构造函数
  */
- const MyQueue = function () {
+const MyQueue = function () {
   // 初始化两个栈
   this.stack1 = [];
   this.stack2 = [];
 };
 
 /**
-* Push element x to the back of queue.
-* @param {number} x
-* @return {void}
-*/
+ * Push element x to the back of queue.
+ * @param {number} x
+ * @return {void}
+ */
 MyQueue.prototype.push = function (x) {
   // 直接调度数组的 push 方法
   this.stack1.push(x);
 };
 
 /**
-* Removes the element from in front of queue and returns that element.
-* @return {number}
-*/
+ * Removes the element from in front of queue and returns that element.
+ * @return {number}
+ */
 MyQueue.prototype.pop = function () {
   // 假如 stack2 为空，需要将 stack1 的元素转移进来
   if (this.stack2.length <= 0) {
@@ -76,10 +76,10 @@ MyQueue.prototype.pop = function () {
 };
 
 /**
-* Get the front element.
-* @return {number}
-* 这个方法和 pop 唯一的区别就是没有将定位到的值出栈
-*/
+ * Get the front element.
+ * @return {number}
+ * 这个方法和 pop 唯一的区别就是没有将定位到的值出栈
+ */
 MyQueue.prototype.peek = function () {
   if (this.stack2.length <= 0) {
     // 当 stack1 不为空时，出栈
@@ -94,14 +94,95 @@ MyQueue.prototype.peek = function () {
 };
 
 /**
-* Returns whether the queue is empty.
-* @return {boolean}
-*/
+ * Returns whether the queue is empty.
+ * @return {boolean}
+ */
 MyQueue.prototype.empty = function () {
   // 若 stack1 和 stack2 均为空，那么队列空
   return !this.stack1.length && !this.stack2.length;
 };
 
-
-// 双端队列
 // 给定一个数组 nums 和滑动窗口的大小 k，请找出所有滑动窗口里的最大值
+/**
+ * 双指针+遍历法
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+const maxSlidingWindow = function (nums, k) {
+  // 缓存数组的长度
+  const len = nums.length;
+  // 定义结果数组
+  const res = [];
+  // 初始化左指针
+  let left = 0;
+  // 初始化右指针
+  let right = k - 1;
+  // 当数组没有被遍历完时，执行循环体内的逻辑
+  while (right < len) {
+    // 计算当前窗口内的最大值
+    const max = calMax(nums, left, right);
+    // 将最大值推入结果数组
+    res.push(max);
+    // 左指针前进一步
+    left++;
+    // 右指针前进一步
+    right++;
+  }
+  // 返回结果数组
+  return res;
+};
+
+// 这个函数用来计算最大值
+function calMax(arr, left, right) {
+  // 处理数组为空的边界情况
+  if (!arr || !arr.length) {
+    return;
+  }
+  // 初始化 maxNum 的值为窗口内第一个元素
+  let maxNum = arr[left];
+  // 遍历窗口内所有元素，更新 maxNum 的值
+  for (let i = left; i <= right; i++) {
+    if (arr[i] > maxNum) {
+      maxNum = arr[i];
+    }
+  }
+  // 返回最大值
+  return maxNum;
+}
+
+// 用双端队列解决上面问题
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+const maxSlidingWindow2 = function (nums, k) {
+  // 缓存数组的长度
+  const len = nums.length;
+  // 初始化结果数组
+  const res = [];
+  // 初始化双端队列
+  const deque = [];
+  // 开始遍历数组
+  for (let i = 0; i < len; i++) {
+    // 当队尾元素小于当前元素时
+    while (deque.length && nums[deque[deque.length - 1]] < nums[i]) {
+      // 将队尾元素（索引）不断出队，直至队尾元素大于等于当前元素
+      deque.pop();
+    }
+    // 入队当前元素索引（注意是索引）
+    deque.push(i);
+    // 当队头元素的索引已经被排除在滑动窗口之外时
+    while (deque.length && deque[0] <= i - k) {
+      // 将队头元素索引出队
+      deque.shift();
+    }
+    // 判断滑动窗口的状态，只有在被遍历的元素个数大于 k 的时候，才更新结果数组
+    if (i >= k - 1) {
+      res.push(nums[deque[0]]);
+    }
+  }
+  // 返回结果数组
+  return res;
+};

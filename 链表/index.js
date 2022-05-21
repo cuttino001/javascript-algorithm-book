@@ -1,5 +1,5 @@
 // 链表的实现
-function ListNode(val){
+function ListNode(val) {
   this.val = val;
   this.next = null;
 }
@@ -8,7 +8,6 @@ const node = new ListNode(1);
 node.next = new ListNode(2);
 
 console.log(node.next.val);
-
 
 /**
  * 常见题型
@@ -27,60 +26,57 @@ console.log(node.next.val);
  * @param {ListNode} l2
  * @return {ListNode}
  */
- const mergeTwoLists = function(l1, l2) {
+const mergeTwoLists = function (l1, l2) {
   // 定义头结点，确保链表可以被访问到
-  let head = new ListNode()
+  let head = new ListNode();
   // cur 这里就是咱们那根“针”
-  let cur = head
+  let cur = head;
   // “针”开始在 l1 和 l2 间穿梭了
-  while(l1 && l2) {
-      // 如果 l1 的结点值较小
-      if(l1.val<=l2.val) {
-          // 先串起 l1 的结点
-          cur.next = l1
-          // l1 指针向前一步
-          l1 = l1.next
-      } else {
-          // l2 较小时，串起 l2 结点
-          cur.next = l2
-          // l2 向前一步
-          l2 = l2.next
-      }
-      
-      // “针”在串起一个结点后，也会往前一步
-      cur = cur.next 
+  while (l1 && l2) {
+    // 如果 l1 的结点值较小
+    if (l1.val <= l2.val) {
+      // 先串起 l1 的结点
+      cur.next = l1;
+      // l1 指针向前一步
+      l1 = l1.next;
+    } else {
+      // l2 较小时，串起 l2 结点
+      cur.next = l2;
+      // l2 向前一步
+      l2 = l2.next;
+    }
 
+    // “针”在串起一个结点后，也会往前一步
+    cur = cur.next;
   }
-  
-  // 处理链表不等长的情况
-  cur.next = l1!==null?l1:l2
-  // 返回起始结点
-  return head.next
-};
 
+  // 处理链表不等长的情况
+  cur.next = l1 !== null ? l1 : l2;
+  // 返回起始结点
+  return head.next;
+};
 
 // 题目2 删除重复的
 /**
  * @param {ListNode} head
  * @return {ListNode}
  */
- const deleteDuplicates = function(head) {
+const deleteDuplicates = function (head) {
   // 设定 cur 指针，初始位置为链表第一个结点
   let cur = head;
   // 遍历链表
-  while(cur != null && cur.next != null) {
-      // 若当前结点和它后面一个结点值相等（重复）
-      if(cur.val === cur.next.val) {
-          // 删除靠后的那个结点（去重）
-          cur.next = cur.next.next;
-      } else {
-          // 若不重复，继续遍历
-          cur = cur.next;
-      }
+  while (cur != null && cur.next != null) {
+    // 若当前结点和它后面一个结点值相等（重复）
+    if (cur.val === cur.next.val) {
+      // 删除靠后的那个结点（去重）
+      cur.next = cur.next.next;
+    } else {
+      // 若不重复，继续遍历
+      cur = cur.next;
+    }
   }
   return head;
 };
-
 
 // 快慢指针与多指针
 // 快慢指针——删除链表的倒数第 N 个结点
@@ -89,8 +85,37 @@ console.log(node.next.val);
 // 1.求长度
 // 2.做减法，找定位。
 // 若用快慢指针，我们其实是把做减法和找定位这个过程给融合了。通过快指针先行一步、接着快慢指针一起前进这个操作，巧妙地把两个指针之间的差值保持在了“n”上（用空间换时间，本质上其实就是对关键信息进行提前记忆，这里咱们相当于用两个指针对差值实现了记忆），这样当快指针走到链表末尾（第 len 个）时，慢指针刚好就在 len - n 这个地方稳稳落地。
+/**
+ * @param {ListNode} head
+ * @param {number} n
+ * @return {ListNode}
+ */
+const removeNthFromEnd = function (head, n) {
+  // 初始化 dummy 结点
+  const dummy = new ListNode();
+  // dummy指向头结点
+  dummy.next = head;
+  // 初始化快慢指针，均指向dummy
+  let fast = dummy;
+  let slow = dummy;
 
+  // 快指针闷头走 n 步
+  while (n !== 0) {
+    fast = fast.next;
+    n--;
+  }
 
+  // 快慢指针一起走
+  while (fast.next) {
+    fast = fast.next;
+    slow = slow.next;
+  }
+
+  // 慢指针删除自己的后继结点
+  slow.next = slow.next.next;
+  // 返回头结点
+  return dummy.next;
+};
 
 // 环形链表判断
 // 立一个flag
